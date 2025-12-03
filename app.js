@@ -28,7 +28,6 @@ async function fetchCsrfToken() {
             method: 'GET',
             // IMPORTANT: This tells the browser to include cookies for this cross-origin request
             credentials: 'include',
-            withCredentials: true,
             referrerPolicy: 'unsafe-url'
             // The browser automatically adds the Origin header (e.g., Origin: http://localhost:5173)
         });

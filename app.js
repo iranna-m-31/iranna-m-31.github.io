@@ -19,7 +19,7 @@ function getCsrfTokenFromCookie() {
 
 // --- 2. Function to perform the initial GET request ---
 async function fetchCsrfToken() {
-    const immUrl = 'http://localhost:8080/configs'; 
+    const immUrl = 'https://zequre-dev.mitsogo.com/configs'; 
     const responseElement = document.getElementById('response');
     
     try {
@@ -50,7 +50,7 @@ async function fetchCsrfToken() {
 // --- 3. Function to handle the POST request ---
 async function sendPostRequest() {
     const token = getCsrfTokenFromCookie();
-    const postUrl = 'http://localhost:8080/api/publish?portal_id=100'; 
+    const postUrl = 'https://zequre-dev.mitsogo.com/api/publish?portal_id=100'; 
     
     const responseElement = document.getElementById('response');
     

@@ -2,6 +2,7 @@
 function getCsrfTokenFromCookie() {
     const name = "XSRF-TOKEN=";
     const decodedCookie = decodeURIComponent(document.cookie);
+    console.log("decodedCookie.   ", decodedCookie);
     const ca = decodedCookie.split(';');
 
     for(let i = 0; i < ca.length; i++) {
@@ -52,10 +53,10 @@ async function sendPostRequest() {
     
     const responseElement = document.getElementById('response');
     
-    if (!token) {
-        responseElement.textContent = "Error: XSRF-TOKEN cookie not found. Please click a 'Fetch CSRF Token' button first.";
-        return;
-    }
+    // if (!token) {
+    //     responseElement.textContent = "Error: XSRF-TOKEN cookie not found. Please click a 'Fetch CSRF Token' button first.";
+    //     return;
+    // }
 
     try {
         const response = await fetch(postUrl, {

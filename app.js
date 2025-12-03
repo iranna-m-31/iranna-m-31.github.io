@@ -2,7 +2,7 @@
 function getCsrfTokenFromCookie() {
     const name = "XSRF-TOKEN=";
     const decodedCookie = decodeURIComponent(document.cookie);
-    console.log("decodedCookie.   ", decodedCookie);
+    console.log("decodedCookie.   ", decodedCookie.toString());
     const ca = decodedCookie.split(';');
 
     for(let i = 0; i < ca.length; i++) {

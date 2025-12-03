@@ -27,7 +27,8 @@ async function fetchCsrfToken() {
         const response = await fetch(immUrl, {
             method: 'GET',
             // IMPORTANT: This tells the browser to include cookies for this cross-origin request
-            credentials: 'include' 
+            credentials: 'include',
+            withCredentials: true
             // The browser automatically adds the Origin header (e.g., Origin: http://localhost:5173)
         });
 

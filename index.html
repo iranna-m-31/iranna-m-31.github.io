@@ -8,11 +8,13 @@
 <body>
     <h1>Spring Security CSRF Client Demo</h1>
     <p>
-        This page simulates an SPA by performing a POST request. 
-        It reads the XSRF-TOKEN from the cookie and sends it in the X-XSRF-TOKEN header.
+        This demo shows that the initial GET request sets the XSRF-TOKEN cookie.
+        Any subsequent GET request using the same origin will use the existing cookie but will NOT update it (as per default Spring Security behavior).
     </p>
 
-    <button id="postButton">Send POST Request</button>
+    <button id="getTokenButton1">1a. Fetch CSRF Token (GET /imm) - Click 1</button>
+    <button id="getTokenButton2">1b. Fetch CSRF Token (GET /imm) - Click 2</button>
+    <button id="postButton">2. Send POST Request</button>
     
     <h2>Server Response:</h2>
     <pre id="response"></pre>

@@ -1,62 +1,90 @@
 // --- 1. Utility function to read the CSRF Token from the cookie ---
 function getCsrfTokenFromCookie() {
     const name = "XSRF-TOKEN=";
-    // Get all cookies as a string and split them into an array
     const decodedCookie = decodeURIComponent(document.cookie);
     const ca = decodedCookie.split(';');
 
-    // Iterate through the cookies to find the one named "XSRF-TOKEN"
     for(let i = 0; i < ca.length; i++) {
         let c = ca[i];
         while (c.charAt(0) === ' ') {
             c = c.substring(1);
         }
         if (c.indexOf(name) === 0) {
-            // Return the value part of the cookie
             return c.substring(name.length, c.length);
         }
     }
     return null; // Token not found
 }
 
-// --- 2. Function to handle the POST request ---
+// --- 2. Function to perform the initial GET request ---
+async function fetchCsrfToken() {
+    const immUrl = 'http://localhost:8080/configs'; 
+    const responseElement = document.getElementById('response');
+    
+    try {
+        responseElement.textContent = "Sending GET request to /configs...";
+        const response = await fetch(immUrl, {
+            method: 'GET',
+            // IMPORTANT: This tells the browser to include cookies for this cross-origin request
+            credentials: 'include' 
+            // The browser automatically adds the Origin header (e.g., Origin: http://localhost:5173)
+        });
+
+        const token = getCsrfTokenFromCookie();
+
+        if (token) {
+            responseElement.textContent = `GET successful! Status: ${response.status}. XSRF-TOKEN found and stored: ${token}`;
+            document.getElementById('postButton').disabled = false;
+        } else {
+            responseElement.textContent = `GET successful, but XSRF-TOKEN cookie was NOT set. Check your Spring Security configuration. Status: ${response.status}`;
+        }
+        
+    } catch (error) {
+        responseElement.textContent = `Network Error during GET: ${error.message}. Ensure your Spring server is running on localhost:8080.`;
+    }
+}
+
+
+// --- 3. Function to handle the POST request ---
 async function sendPostRequest() {
     const token = getCsrfTokenFromCookie();
-    const url = 'http://localhost:8080/api/your-protected-endpoint'; // **CHANGE THIS URL** to your Spring Boot server endpoint
+    const postUrl = 'http://localhost:8080/api/publish?portal_id=100'; 
     
     const responseElement = document.getElementById('response');
     
     if (!token) {
-        responseElement.textContent = "Error: XSRF-TOKEN cookie not found. Did you make an initial GET request to set the cookie?";
+        responseElement.textContent = "Error: XSRF-TOKEN cookie not found. Please click a 'Fetch CSRF Token' button first.";
         return;
     }
 
     try {
-        const response = await fetch(url, {
+        const response = await fetch(postUrl, {
             method: 'POST',
+            // IMPORTANT: Include credentials to send the XSRF-TOKEN cookie
+            credentials: 'include', 
             headers: {
-                // IMPORTANT: This is the core of the CSRF defense for SPAs
+                // This is the core CSRF defense
                 'X-XSRF-TOKEN': token, 
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/vnd.api+json'
+                // The browser automatically adds the Origin header
             },
-            // Example body payload
-            body: JSON.stringify({ message: "Hello from the SPA client!" })
+            body: JSON.stringify({ message: "Hello from the secured client!" })
         });
 
         const data = await response.text();
         
         if (response.ok) {
-            responseElement.textContent = `Success! Status: ${response.status}\nResponse: ${data}`;
+            responseElement.textContent = `POST Success! Status: ${response.status}\nResponse: ${data}`;
         } else {
-            responseElement.textContent = `Failure! Status: ${response.status}\nError: ${data}`;
+            responseElement.textContent = `POST Failure! Status: ${response.status}\nError: ${data}`;
         }
 
     } catch (error) {
-        responseElement.textContent = `Network Error: ${error.message}`;
+        responseElement.textContent = `POST Network Error: ${error.message}`;
     }
 }
 
-// --- 3. Attach event listener ---
+// --- 4. Attach event listeners ---
+document.getElementById('getTokenButton1').addEventListener('click', fetchCsrfToken);
+document.getElementById('getTokenButton2').addEventListener('click', fetchCsrfToken);
 document.getElementById('postButton').addEventListener('click', sendPostRequest);
-
-console.log("Client script loaded. XSRF-TOKEN read:", getCsrfTokenFromCookie());
